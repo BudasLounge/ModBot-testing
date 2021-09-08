@@ -1,4 +1,4 @@
-# ModBot
+# ModBot - Testing
 The modular, modifiable moderator for all your discord needs!
 
 ## Using the Saved-State System
