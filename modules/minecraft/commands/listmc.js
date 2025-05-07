@@ -9,7 +9,7 @@ module.exports ={
     async execute(message, args, extra){
         var api = extra.api;
 
-        const Discord = require('discord.js');
+        const { EmbedBuilder } = require('discord.js');
         console.log(">>display_all_servers");
         var respServer;
         try{
@@ -21,7 +21,7 @@ module.exports ={
         }
         console.log(respServer.minecraft_servers.length + " servers found...");
         var serverList = "List of all servers:\n\n";
-        const ListEmbed = new Discord.MessageEmbed()
+        const ListEmbed = new EmbedBuilder()
         .setColor("#f92f03")
         .setTitle("List of all minecraft servers: ");
         for(var i = 0;i<respServer.minecraft_servers.length;i++){
@@ -34,9 +34,9 @@ module.exports ={
             nextItem += "pack version: " + respServer.minecraft_servers[i].pack_version + "\n";
             nextItem += "date created: " + respServer.minecraft_servers[i].date_created + "\n";
             serverList += nextItem + "\n";
-            ListEmbed.addField(respServer.minecraft_servers[i].display_name + " server info:", nextItem);
+            ListEmbed.addFields({ name: respServer.minecraft_servers[i].display_name + " server info:", value: nextItem });
         }
-        message.channel.send(ListEmbed);
+        message.channel.send({ embeds: [ListEmbed] });
         //message.channel.send(serverList)
         console.log("<<display_all_servers");
     }

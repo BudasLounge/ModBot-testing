@@ -8,7 +8,6 @@ module.exports = {
     has_state: false,
     async execute(message, args, extra) {
         var api = extra.api;
-        const Discord = require("discord.js");
 
         switch(args[1]){
             case "open":

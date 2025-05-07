@@ -9,7 +9,6 @@ module.exports ={
     async execute(message, args, extra){
         var api = extra.api;
 
-        const Discord = require('discord.js');
         const mcping = require('mc-ping-updated');
         var respServer;
         try{
@@ -24,19 +23,19 @@ module.exports ={
             if (!(typeof err === 'undefined' || err === null)) {
                 var ServerStatus = ' server is currently offline';
                 console.log(ServerStatus);
-                message.channel.send(ServerStatus);
+                message.channel.send({ content: ServerStatus });
                 return ServerStatus;
             }
             else if ( res.players.online === 0) { 
                 var ServerStatusNoOne = ' server is **online**  -  *Nobody is playing!*'; 
                 console.log(ServerStatusNoOne);
-                message.channel.send(ServerStatusNoOne);
+                message.channel.send({ content: ServerStatusNoOne });
                 return ServerStatusNoOne;
             }
             else if (!( res.players.online === 0)) { 
                 var ServerStatusSomeone =  ' server is **online**  -  **'+res.players.online+'** people are playing!'; 
                 console.log(ServerStatusSomeone); 
-                message.channel.send(ServerStatusSomeone);
+                message.channel.send({ content: ServerStatusSomeone });
                 return ServerStatusSomeone;
             }
         })

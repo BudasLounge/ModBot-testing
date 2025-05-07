@@ -1,4 +1,4 @@
-var Discord = require('discord.js');
+const { Collection } = require('@discordjs/collection');
 var fs = require('fs');
 var APIClient = require('./APIClient.js');
 
@@ -32,8 +32,8 @@ class ModuleHandler {
      * @param {string} modules_folder The location of the folder containing the modules for this bot.
      */
     discover_modules(modules_folder) {
-        this.modules = new Discord.Collection();
-        this.disabled_modules = new Discord.Collection();
+        this.modules = new Collection();
+        this.disabled_modules = new Collection();
 
         this.logger.info("Discovering Modules in: " + modules_folder + " ...");
         var module_folders = fs.readdirSync(modules_folder, { withFileTypes: true });
@@ -65,7 +65,7 @@ class ModuleHandler {
 
         for(var current_module_name of Array.from(this.modules.keys())) {
             var current_module = this.modules.get(current_module_name);
-            current_module.commands = new Discord.Collection();
+            current_module.commands = new Collection();
 
             var commands_dir = current_module.location + current_module.config.commands_directory + "/";
 

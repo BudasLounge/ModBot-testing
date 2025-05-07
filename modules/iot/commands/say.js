@@ -50,7 +50,7 @@ module.exports = {
         filter.removeWords(...approvedWords);
         const say = require('say');
         args.shift();
-        var sayMessage = args.join();
+        var sayMessage = args.join(" "); // Updated to join with spaces
         if(filter.isProfane(sayMessage)){
             message.channel.send("No bad words for now!");
             return;

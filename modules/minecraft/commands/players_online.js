@@ -10,7 +10,7 @@ module.exports = {
         var api = extra.api;
 
         const axios = require('axios');
-        const Discord = require('discord.js');
+        const { EmbedBuilder } = require('discord.js');
         console.log(">>players_online");
 	try {
         var respServer;
@@ -26,7 +26,7 @@ module.exports = {
             var status = await getServerState(respServer.minecraft_servers[0].display_name, respServer.minecraft_servers[0].port, respServer.minecraft_servers[0].numeric_ip, message.channel);
             if(status == "online"){
                 console.log("Making listEmbed now!");
-                const ListEmbed = new Discord.MessageEmbed()
+                const ListEmbed = new EmbedBuilder()
                 .setColor("#f92f03")
                 .setTitle("List of all players on " + respServer.minecraft_servers[0].display_name + ": ");
                 var msg = "Players: ";
@@ -42,8 +42,8 @@ module.exports = {
                         msg += "\n  - " + player.username;
                     }
                 }
-                ListEmbed.addField(num_players, msg);
-                message.channel.send(ListEmbed);
+                ListEmbed.addFields({ name: num_players, value: msg });
+                message.channel.send({ embeds: [ListEmbed] });
             }else{
                 message.channel.send("That server doesn't appear to be online right now!");
             }

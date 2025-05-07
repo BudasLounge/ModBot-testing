@@ -11,7 +11,7 @@ module.exports = {
 
         console.log(">>start_campaign");
         message.channel.send("<@" + message.member.id + "> "+"please fill out the information!");
-        const Discord = require(`discord.js`);
+        const { ChannelType } = require('discord.js');
 
         let Author = message.author;
         let Authorid = Author.id; //You will need this in the future
@@ -29,7 +29,7 @@ module.exports = {
             return response1.author.id === Authorid;
         }
         message.channel.send("<@" + message.member.id + "> "+"What is the module you are using?").then(() => {
-        message.channel.awaitMessages(filter1, { max: 1 })
+        message.channel.awaitMessages({ filter: filter1, max: 1 })
         .then(collected1 => {
             const response1 = collected1.first();
             module = response1.content;
@@ -38,7 +38,7 @@ module.exports = {
             return response2.author.id === Authorid;
         }
         message.channel.send("<@" + message.member.id + "> "+"What is the start date? (Format YYYY-MM-DD)").then(() => {
-        message.channel.awaitMessages(filter2, { max: 1 })
+        message.channel.awaitMessages({ filter: filter2, max: 1 })
         .then(collected2 => {  
             const response2 = collected2.first();
             start_date = response2.content;
@@ -47,7 +47,7 @@ module.exports = {
             return response3.author.id === Authorid;
         }
         message.channel.send("<@" + message.member.id + "> "+"How many days in between sessions? (enter only the numeric value)").then(() => {
-        message.channel.awaitMessages(filter3, { max: 1 })
+        message.channel.awaitMessages({ filter: filter3, max: 1 })
         .then(collected3 => {
             const response3 = collected3.first();
             schedule_type = response3.content;
@@ -56,7 +56,7 @@ module.exports = {
             return response4.author.id === Authorid;
         }
         message.channel.send("<@" + message.member.id + "> "+"What is the name of the role for your players?").then(() => {
-        message.channel.awaitMessages(filter4, { max: 1 })
+        message.channel.awaitMessages({ filter: filter4, max: 1 })
         .then(collected4 => {
             const response4 = collected4.first();
             role_name = response4.content;
@@ -65,16 +65,16 @@ module.exports = {
             return response5.author.id === Authorid;
         }
         message.channel.send("<@" + message.member.id + "> "+"What is the name you want your folder to be?").then(() => {
-        message.channel.awaitMessages(filter5, { max: 1 })
+        message.channel.awaitMessages({ filter: filter5, max: 1 })
         .then(collected5 => {
             const response5 = collected5.first();
             category_name = response5.content;
 
         const filter6 = response6 => {
-            return response5.author.id === Authorid;
+            return response6.author.id === Authorid;
         }
         message.channel.send("<@" + message.member.id + "> "+"How many text channels do you need?").then(() => {
-        message.channel.awaitMessages(filter6, { max: 1 })
+        message.channel.awaitMessages({ filter: filter6, max: 1 })
         .then(collected6 => {
             const response6 = collected6.first();
             text_amount = response6.content;
@@ -83,45 +83,48 @@ module.exports = {
             return response7.author.id === Authorid;
         }
         message.channel.send("<@" + message.member.id + "> "+"How many voice channels do you need?").then(() => {
-        message.channel.awaitMessages(filter7, { max: 1 })
+        message.channel.awaitMessages({ filter: filter7, max: 1 })
         .then(collected7 => {
             const response7 = collected7.first();
             voice_amount = response7.content;
             
-
-        message.guild.createChannel(category_name, "category");
-        let category = message.guild.channels.find(c => (c.name == category_name && c.type == "category"));
-        for(var i = 1;i <= text_amount;i++){
-            const filter8 = response8 => {
-                return response8.author.id === Authorid;
-            }
-            message.channel.send("<@" + message.member.id + "> "+"What is the name of text channel " + i + "?").then(() => {
-            message.channel.awaitMessages(filter8, { max: 1 })
-            .then(collected8 => {
-                const response8 = collected8.first();
-                message.member.guild.createChannel(response8, "text");
-                let channel = message.member.guild.channels.cache.find(c => (c.name == response8 && c.type == "text"));
-                channel.setParent(category.id);
+        message.guild.channels.create({ name: category_name, type: ChannelType.GuildCategory })
+        .then(async category => {
+            for(var i = 1;i <= text_amount;i++){
+                const filter8 = response8 => {
+                    return response8.author.id === Authorid;
+                }
+                await message.channel.send("<@" + message.member.id + "> "+"What is the name of text channel " + i + "?").then(async () => {
+                await message.channel.awaitMessages({ filter: filter8, max: 1 })
+                .then(async collected8 => {
+                    const response8Content = collected8.first().content;
+                    await message.member.guild.channels.create({ name: response8Content, type: ChannelType.GuildText })
+                    .then(channel => {
+                        channel.setParent(category.id);
+                    });
+                });
             });
-        });
-        }
-
-        for(var i = 1;i <= voice_amount;i++){
-            const filter8 = response8 => {
-                return response8.author.id === Authorid;
             }
-            message.channel.send("<@" + message.member.id + "> "+"What is the name of voice channel " + i + "?").then(() => {
-            message.channel.awaitMessages(filter8, { max: 1 })
-            .then(collected8 => {
-                const response8 = collected8.first();
-                message.member.guild.createChannel(response8, "voice");
-                let channel = message.member.guild.channels.cache.find(c => (c.name == response8 && c.type == "text"));
-                channel.setParent(category.id);
+
+            for(var i = 1;i <= voice_amount;i++){
+                const filter8 = response8 => {
+                    return response8.author.id === Authorid;
+                }
+                await message.channel.send("<@" + message.member.id + "> "+"What is the name of voice channel " + i + "?").then(async () => {
+                await message.channel.awaitMessages({ filter: filter8, max: 1 })
+                .then(async collected8 => {
+                    const response8Content = collected8.first().content;
+                    await message.member.guild.channels.create({ name: response8Content, type: ChannelType.GuildVoice })
+                    .then(channel => {
+                        channel.setParent(category.id);
+                    });
+                });
             });
+            }
+            
+            message.channel.send("<@" + message.member.id + "> "+"Here is what you entered:\n" + module + "\n" + start_date + "\n" + schedule_type + "\n" + role_name + "\n" + category_name + "\n" + text_amount + "\n" + voice_amount);
         });
-        }
-        
-        message.channel.send("<@" + message.member.id + "> "+"Here is what you entered:\n" + module + "\n" + start_date + "\n" + schedule_type + "\n" + role_name + "\n" + category_name + "\n" + text_amount + "\n" + voice_amount);
+
         });
         });
         });

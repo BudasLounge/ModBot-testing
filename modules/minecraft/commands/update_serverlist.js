@@ -10,7 +10,7 @@ module.exports = {
         var api = extra.api;
 
         if(message.member.roles.cache.find(r => r.id === "586313447965327365") || message.author.id === "185223223892377611"){
-        const Discord = require('discord.js');
+        const { EmbedBuilder } = require('discord.js');
         var respServer;
         try{
             respServer = await api.get("minecraft_server", {
@@ -20,7 +20,7 @@ module.exports = {
             console.error(err);
         }
         if(!respServer.minecraft_servers[0]){
-            message.channel.send("No server with that short_hand...checking display_name");
+            message.channel.send({ content: "No server with that short_hand...checking display_name" });
             try{
                 respServer = await api.get("minecraft_server", {
                     display_name: args[1]
@@ -30,13 +30,13 @@ module.exports = {
             }
         }
         if(respServer.minecraft_servers[0]){
-            message.channel.send("Found one!");
+            message.channel.send({ content: "Found one!" });
             try{
                 var data = {short_name: respServer.minecraft_servers[0].short_name};
                 data[args[2]] = args[3];
                 var respUpdate = await api.put("minecraft_server", data);
                 if(respUpdate.ok == true){
-                    const ListEmbed = new Discord.MessageEmbed()
+                    const ListEmbed = new EmbedBuilder()
                     .setColor("#f92f03")
                     .setTitle("Here's what changed: ");
                     var changedInfo = "";
@@ -56,17 +56,17 @@ module.exports = {
                     changedInfo += "mc_version: " + respUpdate.minecraft_server.mc_version + "\n";
                     changedInfo += "pack_version: " + respUpdate.minecraft_server.pack_version;
 
-                    ListEmbed.addField("A post function update: ", changedInfo);
-                    message.channel.send(ListEmbed);
+                    ListEmbed.addFields({ name: "A post function update: ", value: changedInfo });
+                    message.channel.send({ embeds: [ListEmbed] });
                 }
             } catch(err3){
                 this.logger.error(err3.message);
             }
         }else{
-            message.channel.send("Nothing found...");
+            message.channel.send({ content: "Nothing found..." });
         }
     }else{
-        message.channel.send("You don't have permission to use that command!");
+        message.channel.send({ content: "You don't have permission to use that command!" });
     }
 }
 };

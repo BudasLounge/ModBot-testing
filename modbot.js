@@ -2,8 +2,15 @@ var fs = require('fs');
 var axios = require('axios');
 var request = require('request');
 
-var discord = require('discord.js');
-const client = new discord.Client();
+const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
+
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
+    ]
+});
 
 var config = JSON.parse(fs.readFileSync('modbot.json'));
 
@@ -33,13 +40,20 @@ async function botInit () {
     var channel = await client.channels.fetch(config.default_channel);
     
     if(fs.existsSync("updated.txt")) {
-        channel.send(config.startup_messages.update);
+        channel.send({ content: config.startup_messages.update });
         fs.unlinkSync("updated.txt");
     } else {
-        channel.send(config.startup_messages.restart);
+        channel.send({ content: config.startup_messages.restart });
     }
 
-    client.user.setActivity(config.bot_activity.name, { type: config.bot_activity.type });
+    const activityTypeString = config.bot_activity.type ? config.bot_activity.type.toUpperCase() : "PLAYING";
+    let activityTypeEnumValue = ActivityType.Playing;
+
+    if (activityTypeString === "LISTENING") activityTypeEnumValue = ActivityType.Listening;
+    else if (activityTypeString === "WATCHING") activityTypeEnumValue = ActivityType.Watching;
+    else if (activityTypeString === "COMPETING") activityTypeEnumValue = ActivityType.Competing;
+
+    client.user.setActivity(config.bot_activity.name, { type: activityTypeEnumValue });
 }
 
 client.on('ready', botInit);
@@ -57,7 +71,7 @@ function authClient() {
     client.login(token);
 }
 
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     logger.info("Got message!");
     modules.handle_command(message);
 });

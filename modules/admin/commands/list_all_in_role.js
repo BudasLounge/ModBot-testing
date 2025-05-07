@@ -7,9 +7,9 @@ module.exports = {
     needs_api: false,
     has_state: false,
     async execute(message, args, extra) {
-        const Discord = require('discord.js');
+        const { EmbedBuilder } = require('discord.js');
         role = message.guild.roles.cache.find(role => role.name.toLowerCase().trim() === args[1]);
-		if(args[1] == "everyone") return message.reply("I don't like listing everyone, sorry!");
+		if(args[1] == "everyone") return message.reply({ content: "I don't like listing everyone, sorry!" });
 		var strLength = 0;
 		var messageString = "";
 		var role = "";
@@ -31,13 +31,13 @@ module.exports = {
 		counter++;
 		}
 		role = message.guild.roles.cache.find(role => role.name.toLowerCase() === messageString.trim());
-		if (!role) return message.reply("There is not such a role!");
+		if (!role) return message.reply({ content: "There is not such a role!" });
 		for(let j = counter; j>=0; j--){
 			args.shift();
 		}
-		const ListEmbed = new Discord.MessageEmbed()
+		const ListEmbed = new EmbedBuilder()
 		.setTitle('Users with the '+role.name+' role:')
-		.setDescription("<@"+message.guild.roles.cache.get(role.id).members.map(m=>m.user.id)+">\n");
-		message.channel.send(ListEmbed); 
+		.setDescription(message.guild.roles.cache.get(role.id).members.map(m=>m.user.id).map(id => `<@${id}>`).join(", ")); // Updated to map IDs to mentions and join with comma and space
+		message.channel.send({ embeds: [ListEmbed] }); 
     }
 };

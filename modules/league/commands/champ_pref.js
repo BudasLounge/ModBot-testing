@@ -9,7 +9,6 @@ module.exports = {
     async execute(message, args, extra) {
         var api = extra.api;
         
-        const Discord = require('discord.js');
         var respChamps;
         try{
             respChamps = await api.get("league_champion",{
